@@ -1,8 +1,6 @@
-name: Sync OpenWRT Releases
+name: Sync ImmortalWRT 24.10.0 Releases
 
 on:
-  # schedule:
-   # - cron: '0 0 */3 * *' # Проверка новых релизов раз в три дня
   workflow_dispatch: # Возможность вручную запустить Action
 
 jobs:
@@ -15,12 +13,12 @@ jobs:
       - name: Checkout your repo
         uses: actions/checkout@v4
 
-      - name: Get the latest release from OpenWRT
+      - name: Get the latest release from ImmortalWRT 24.10.0
         id: get_release
         run: |
-          curl -s https://api.github.com/repos/openwrt/openwrt/releases/latest > latest_release.json
-          RELEASE_TAG=$(jq -r .tag_name latest_release.json)
-          RELEASE_NAME=$(jq -r .name latest_release.json)
+          # Указываем релиз 24.10.0 напрямую, если это фиксированная версия
+          RELEASE_TAG="v24.10.0"
+          RELEASE_NAME="ImmortalWRT 24.10.0"
           echo "::set-output name=release_tag::$RELEASE_TAG"
           echo "::set-output name=release_name::$RELEASE_NAME"
 
@@ -37,7 +35,7 @@ jobs:
       - name: Create release in your repo
         if: steps.check_release.outputs.release_exists == 'false'
         run: |
-          ART="
+          ART=" 
           \`\`\`
             _______                     ________        __
            |       |.-----.-----.-----.|  |  |  |.----.|  |_
@@ -45,7 +43,7 @@ jobs:
            |_______||   __|_____|__|__||________||__|  |____|
                     |__| A M N E Z I A   W I R E G U A R D
           -----------------------------------------------------
-          OpenWrt ${{ steps.get_release.outputs.release_tag }}
+          ImmortalWRT 24.10.0
           -----------------------------------------------------
           \`\`\`"
 
@@ -53,7 +51,7 @@ jobs:
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "$(jq -n --arg tag "${{ steps.get_release.outputs.release_tag }}" \
-                    --arg name "Build amnezia wg for all devices with openwrt ${{ steps.get_release.outputs.release_tag }}" \
+                    --arg name "Build amnezia wg for all devices with ImmortalWRT 24.10.0" \
                     --arg body "$ART" \
                     '{ tag_name: $tag, name: $name, body: $body }')"
   
